@@ -42,7 +42,7 @@
         "@typescript-eslint/eslint-plugin": "^4.14.0",
         "@typescript-eslint/parser": "^4.14.0",
         "@web/dev-server-esbuild": "^0.2.12",
-        "@web/dev-server-import-maps": "0.0.5",
+        "@web/dev-server-import-maps": "0.0.6",
         "@web/test-runner": "^0.12.17",
         "@web/test-runner-playwright": "^0.8.4",
         "circular-dependency-plugin": "^5.2.2",
