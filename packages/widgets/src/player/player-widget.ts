@@ -1,6 +1,6 @@
 import { BaseWidget } from '../base-widget';
 import { customElement, attr } from '@microsoft/fast-element';
-import { IAvaPlayerConfig, PlayerEvents } from './definitions';
+import { IAvaPlayerCallbacks, IAvaPlayerConfig, PlayerEvents } from './definitions';
 import { TokenHandler } from '../../../common/services/auth/token-handler.class';
 import { AvaAPi } from '../../../common/services/auth/ava-api.class';
 import { MediaApi } from '../../../common/services/media/media-api.class';
@@ -25,6 +25,7 @@ PlayerComponent;
 export class Player extends BaseWidget {
     @attr({ mode: 'fromView' })
     public config: IAvaPlayerConfig;
+    public callbacks: IAvaPlayerCallbacks;
     private loaded = false;
     private source: ISource = null;
     private allowedControllers: ControlPanelElements[] = null;
@@ -85,6 +86,24 @@ export class Player extends BaseWidget {
         this.init();
     }
 
+    public setCallbacks(callbacks: IAvaPlayerCallbacks) {
+        this.callbacks = callbacks;
+        if(this.loaded) {
+            const playerComponent: PlayerComponent = this.shadowRoot.querySelector('media-player');
+
+            if(this.callbacks?.drawInferencesCallback) {
+                window.console.log(playerComponent.player);
+                playerComponent.player.drawInferencesCallback = this.callbacks?.drawInferencesCallback;
+            }
+            if(this.callbacks?.parseInferenceCallback) {
+                playerComponent.player.parseInferenceCallback = this.callbacks?.parseInferenceCallback;
+            }
+            if(this.callbacks?.toggleBodyTrackingCallback) {
+                playerComponent.player.toggleBodyTrackingCallback = this.callbacks?.toggleBodyTrackingCallback;
+            }
+        }
+    }
+
     public setSource(source: ISource) {
         this.source = source;
         MediaApi.videoEntity = this.source.videoEntity;
@@ -136,6 +155,17 @@ export class Player extends BaseWidget {
                         await AvaAPi.authorize();
                         playerComponent.cameraName = AvaAPi.videoName;
                         playerComponent.init(this.allowedControllers, this.clipTimeRange, this.isMuted);
+                    
+                        if(this.callbacks?.drawInferencesCallback) {
+                            window.console.log(playerComponent.player);
+                            playerComponent.player.drawInferencesCallback = this.callbacks?.drawInferencesCallback;
+                        }
+                        if(this.callbacks?.parseInferenceCallback) {
+                            playerComponent.player.parseInferenceCallback = this.callbacks?.parseInferenceCallback;
+                        }
+                        if(this.callbacks?.toggleBodyTrackingCallback) {
+                            playerComponent.player.toggleBodyTrackingCallback = this.callbacks?.toggleBodyTrackingCallback;
+                        }
                     }
                 })
                 .catch((error) => {
